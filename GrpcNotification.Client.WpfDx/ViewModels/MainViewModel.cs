@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Windows.Data;
 using DevExpress.Mvvm.DataAnnotations;
@@ -26,7 +27,7 @@ namespace GrpcNotification.Client.WpfDx.ViewModels
             {
                 p_builder.CommandFromMethod(p_x => p_x.OnLockPersonScriptCommand()).CommandName("LockPersonScriptCommand");
                 p_builder.CommandFromMethod(p_x => p_x.OnUpdatePersonScriptCommand()).CommandName("UpdatePersonScriptCommand");
-                p_builder.Property(p_x => p_x.SelectedPerson).OnPropertyChangedCall(p_x => p_x.OnSelectedPersonChanged());
+                // p_builder.Property(p_x => p_x.SelectedPerson).OnPropertyChangedCall(p_x => p_x.OnSelectedPersonChanged());
             }
         }
 
@@ -41,7 +42,10 @@ namespace GrpcNotification.Client.WpfDx.ViewModels
             };
             PersonCollection = new XPCollection<Person>(unitOfWork);
 
-
+            m_originId = Guid.NewGuid().ToString();
+            m_notificationService = new NotificationServiceClient();
+            consoleLock = new object();
+            StartReadingNotificationServer();
         }
 
         public static MainViewModel Create()
@@ -57,18 +61,33 @@ namespace GrpcNotification.Client.WpfDx.ViewModels
         public virtual UnitOfWork unitOfWork { get; set; }
         public virtual XPCollection<Person> PersonCollection { get; set; }
         public virtual Person SelectedPerson { get; set; }
-
+        public virtual string m_originId { get; set; }
+        public virtual object consoleLock { get; set; }
+        public virtual NotificationServiceClient m_notificationService { get; set; }
+        public virtual ObservableCollection<string> NotificationHistory { get; set; }
 
 
         #endregion
 
         #region Methods
 
-
         private void StartReadingNotificationServer()
         {
-
+            _ = m_notificationService.NotificationLogs()
+                .ForEachAsync(
+                    x => NotificationHistory.Add($"{x.At.ToDateTime().ToString("HH:mm:ss")} {x.OriginId}: {x.Content}"));
         }
+
+        private async void WriteCommandExecute(string content)
+        {
+            await m_notificationService.Write(new NotificationLog
+            {
+                OriginId = m_originId,
+                Content = content,
+                At = Timestamp.FromDateTime(DateTime.Now.ToUniversalTime())
+            });
+        }
+
 
         public void OnUpdatePersonScriptCommand()
         {
@@ -78,7 +97,7 @@ namespace GrpcNotification.Client.WpfDx.ViewModels
         {
             SelectedPerson.IsLocked = !SelectedPerson.IsLocked;
             unitOfWork.CommitChanges();
-
+        
             var content = JsonConvert.SerializeObject(new GrpcContent()
             {
                 IsLock = SelectedPerson.IsLocked,
@@ -86,15 +105,14 @@ namespace GrpcNotification.Client.WpfDx.ViewModels
                 LockType = GrpcContent.Type.PERSON
             });
 
-
- 
+            WriteCommandExecute(content);
             
         }
-
-        public void OnSelectedPersonChanged()
-        {
-            
-        }
+        //
+        // public void OnSelectedPersonChanged()
+        // {
+        //     
+        // }
         #endregion
     }
 }
