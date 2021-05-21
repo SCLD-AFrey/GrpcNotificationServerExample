@@ -8,7 +8,7 @@ using Google.Protobuf.WellKnownTypes;
 using GrpcNotification.Common;
 
 
-namespace GrpcNotification.Common.Server
+namespace GrpcNotification.Common.Client
 {
     public class NotificationService : BindableBase
     {

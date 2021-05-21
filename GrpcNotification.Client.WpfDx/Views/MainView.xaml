@@ -41,15 +41,15 @@
 
         </dxg:GridControl>
 
-        <dxprg:PropertyGridControl Grid.Row="0"  Grid.Column="1"
+        <dxprg:PropertyGridControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
                                    SelectedObject="{DXBinding 'SelectedPerson', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                    ShowCategories="Hidden"
                                    ShowSearchBox="False" ShowToolPanel="False">
         </dxprg:PropertyGridControl>
         
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
-            <dx:SimpleButton Content="Update" Command="{Binding UpdatePersonScriptCommand}" Background="Green" />
-            <dx:SimpleButton Content="Lock" Command="{Binding LockPersonScriptCommand}" Background="Red" />
+            <dx:SimpleButton Content="Update" Command="{Binding UpdatePersonScriptCommand}" Foreground="White" Background="Green" />
+            <dx:SimpleButton Content="Lock" Command="{Binding LockPersonScriptCommand}" Foreground="White" Background="Red" />
         </StackPanel>
         
         <ListBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" x:Name="History" ItemsSource="{Binding NotificationHistory}" />
