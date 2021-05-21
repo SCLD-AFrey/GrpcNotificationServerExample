@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <RootNamespace>GrpcNotification.Client.WpfDx</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>9</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="DevExpress.WindowsDesktop.Wpf" Version="20.2.7" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GrpcNotification.Common\GrpcNotification.Common.csproj" />
+    <ProjectReference Include="..\GrpcNotification.Data\GrpcNotification.Data.csproj" />
+  </ItemGroup>    
+</Project>

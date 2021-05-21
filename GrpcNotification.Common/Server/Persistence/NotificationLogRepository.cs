@@ -1,0 +1,22 @@
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using GrpcNotification.Common.Server.Model;
+
+namespace GrpcNotification.Common.Server.Persistence
+{
+    [Export(typeof(INotificationLogRepository))]
+    public class NotificationLogRepository : INotificationLogRepository
+    {
+        private readonly List<NotificationLog> m_storage = new(); // dummy on memory storage
+
+        public void Add(NotificationLog chatLog)
+        {
+            m_storage.Add(chatLog);
+        }
+
+        public IEnumerable<NotificationLog> GetAll()
+        {
+            return m_storage.AsReadOnly();
+        }
+    }
+}
